@@ -1,7 +1,7 @@
-site: Asko
-url: #yoururl
-title: Asko
-description: Simple and minimalistic jekyll blogging theme.
+site: cm0
+url: https://cm0.dev
+title: cm0.dev
+description: Random Knowledge
 googlewebfonts: Fira+Code:wght@400;500;700
 twitter:
   username: #yourusername
@@ -16,7 +16,7 @@ author:
 permalink: pretty
 
 baseurl: ""
-
+markdown: kramdown
 highlighter: rouge
 
 exclude:
