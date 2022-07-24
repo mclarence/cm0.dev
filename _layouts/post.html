@@ -21,7 +21,7 @@ layout: default
     <a href="/tag/{{tag}}">{{tag}}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}
   </div>
 
-  {{ content }}
+  {{ content | toc }}
   
   {% include disqus.html %}
 </section>

@@ -495,3 +495,11 @@ figcaption {
 		}
 	}
 }
+
+#toc {
+	width: fit-content;
+	margin: 5px 0 31px;
+	padding: 10px 30px;
+	border: 1px solid var(--dark-text-color);
+	border-radius: 3px;
+}

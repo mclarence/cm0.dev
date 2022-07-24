@@ -4,6 +4,7 @@ title:  "How to Boot PopOS with Secure Boot"
 date:   2022-01-06
 tags: linux secure-boot popos
 comments: true
+toc: true
 ---
 
 ## Intro
