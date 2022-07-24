@@ -1,9 +1,22 @@
 ---
-layout: page
+title: Search
+layout: default
 ---
-{% include search_field.html %}
+
+<section id="intro">
+  <div class="flex-row-between">
+    <h1>Search</h1>
+        <button id="theme-toggle" onclick="modeSwitcher()">
+            <div></div>
+        </button>
+  </div>
+  <a href="{{site.url}}/">« back</a>
+  {% include search_field.html %}
+</section>
 
 <ul id="search-results"></ul>
+
+
 
 <script>
   window.store = {

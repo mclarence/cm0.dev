@@ -2,7 +2,7 @@
 layout: post
 title:  "How to Boot PopOS with Secure Boot"
 date:   2022-01-06
-tags: linux
+tags: linux secure-boot popos
 comments: true
 ---
 
@@ -21,31 +21,31 @@ How to boot PopOS (or any linux distro) with secure boot enabled.
 ## Steps
 ---
 1. Open a terminal session and gain root privileges.
-  ```
-  sudo -i
-  ```
+```
+sudo -i
+```
 2. Change directory to `/boot/efi/EFI/systemd`.
-  ```
-  cd /boot/efi/EFI/systemd
-  ```
+```
+cd /boot/efi/EFI/systemd
+```
 3. Verify that `systemd-bootx64.efi` is in this directory.
-  ```
-  $> ls
-  systemd-bootx64.efi
-  ```
+```
+$> ls
+systemd-bootx64.efi
+```
 4. Rename `systemd-bootx64.efi` to `loader.efi`
-  ```
-  mv systemd-bootx64.efi loader.efi
-  ```
+```
+mv systemd-bootx64.efi loader.efi
+```
 5. Move both `Preloader.efi` and `HashTool.efi` to `/boot/efi/EFI/systemd`
-  ```
-  mv Preloader.efi /boot/efi/EFI/systemd
-  mv HashTool.efi /boot/efi/EFI/systemd
-  ```
+```
+mv Preloader.efi /boot/efi/EFI/systemd
+mv HashTool.efi /boot/efi/EFI/systemd
+```
 6. Rename `Preloader.efi` to `systemd-bootx64.efi`
-  ```
-  mv Preloader.efi systemd-bootx64.efi
-  ```
+```
+mv Preloader.efi systemd-bootx64.efi
+```
 7. Reboot into BIOS and enable secure boot.
 8. Reboot again and you should now see this screen:
   ![bootimg](/assets/images/secure-boot-popos/step8.jpg)

@@ -1,8 +1,14 @@
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-<form action="{{ site.baseurl }}/search" method="get">
-    <div id="search">
-    <label for="search-box"><b>Search</b></label>
-    <input type="text" name="query" id="search_box">
-    <input type="submit" value="search" class="material-symbols-outlined">
-    </div>
-</form>
+<div class="search-article">
+    <label for="search-input" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="rgba(128,128,128,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-search">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    </label>
+    <form action="{{ site.baseurl }}/search" method="get">    
+        <input type="search" name="query" id="search-input" placeholder="Search for posts here" aria-label="Search">
+        <input type="submit" value="search" hidden />
+    </form>
+</div>

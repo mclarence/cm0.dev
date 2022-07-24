@@ -4,7 +4,7 @@ layout: default
 
 <section id="intro">
     <div class="flex-row-between">
-        <h1>cm0.dev - Random Knowledge</h1>
+        <h1 style="margin-bottom: 1.5rem;">cm0.dev - Random Knowledge</h1>
         <button id="theme-toggle" onclick="modeSwitcher()">
             <div></div>
         </button>
@@ -13,9 +13,8 @@ layout: default
         A place where I share some things i've learnt when dealing with technology.
     </p>
 </section>
-
+{% include search_field.html %}
 <section class="posts">
-    {% include search_field.html %}
     <h3>BLOG</h3>
     <ul>
         {% for post in site.posts %}
