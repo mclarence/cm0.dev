@@ -152,7 +152,7 @@ html[data-theme="dark"] {
 body {
 	font-family: "Fira Code", monospace;
 	text-rendering: optimizeLegibility;
-	line-height: 1.75;
+	line-height: 1.50;
 	color: var(--main-text-color);
 }
 
@@ -400,4 +400,40 @@ section {
 
 figcaption {
 	font-size: smaller;
+}
+
+#search {
+	// center this div using flexbox
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	justify-content: center;
+	align-items: center;
+}
+
+#search_box {
+	flex-grow: 2;
+	margin: 0.5em;
+}
+
+input[type="text"] {
+	border: 1px solid var(--dark-text-color);
+	border-radius: 4px;
+	padding: 0.1rem;
+	width: 100%;
+	font-size: 1rem;
+	font-family: inherit;
+	font-weight: bold;
+	color: var(--dark-text-color);
+}
+
+input[type="submit"] {
+	cursor: pointer;
+	border: none;
+	background: var(--light-text-color);
+	color: var(--dark-text-color);
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	font-size: 1rem;
+	transition: all 0.35s ease 0s;
 }
