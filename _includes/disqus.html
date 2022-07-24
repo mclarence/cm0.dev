@@ -1,8 +1,9 @@
+<h2>Comments</h2>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
   var disqus_config = function () {
-    this.page.url = "{{ site.base_url }}{{ page.url }}";
-    this.page.identifier = "{{ page.url }}";
+    this.page.url = "{{ site.url }}{{ page.url }}";
+    this.page.identifier = "{{ page.id }}";
   };
 
   (function() {
@@ -11,6 +12,12 @@
     s.setAttribute('data-timestamp', +new Date());
     (d.head || d.body).appendChild(s);
     })();
+
+    document.addEventListener('themeChanged', function (e) { 
+    if (document.readyState == 'complete') {
+      DISQUS.reset({ reload: true, config: disqus_config });
+    }
+  });
 </script>
 <noscript>
   Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>

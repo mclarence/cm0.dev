@@ -2,7 +2,8 @@
 layout: post
 title:  "How to Boot PopOS with Secure Boot"
 date:   2022-01-06
-categories: linux
+tags: linux
+comments: true
 ---
 
 ## Intro

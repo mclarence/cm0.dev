@@ -437,3 +437,8 @@ input[type="submit"] {
 	font-size: 1rem;
 	transition: all 0.35s ease 0s;
 }
+
+#back-to-top {
+	background: var(--light-text-color);
+	color: var(--dark-text-color);
+}

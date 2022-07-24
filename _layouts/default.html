@@ -24,6 +24,9 @@ layout: compress
         document.getElementById("theme-toggle").classList.add('moon');
         document.getElementById("theme-toggle").classList.remove('sun');
       }
+
+      const event = new Event('themeChanged');
+      document.dispatchEvent(event);
     }
 
     let theme = localStorage.getItem('theme');
