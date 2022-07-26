@@ -150,7 +150,7 @@ html[data-theme="dark"] {
 }
 
 body {
-	font-family: "Fira Code", monospace;
+	font-family: "Roboto Mono", monospace;
 	text-rendering: optimizeLegibility;
 	line-height: 1.50;
 	color: var(--main-text-color);
@@ -323,7 +323,7 @@ header ul {
 	font-variant-numeric: tabular-nums;
 }
 
-time {
+time, .reading-time {
 	color: var(--light-text-color);
 }
 
@@ -369,6 +369,12 @@ main {
 .flex-row-between {
 	display: flex;
 	flex-direction: row;
+	justify-content: space-between;
+}
+
+.flex-column-between {
+	display: flex;
+	flex-direction: column;
 	justify-content: space-between;
 }
 

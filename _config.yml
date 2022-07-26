@@ -1,8 +1,8 @@
 site: cm0
 url: https://cm0.dev
 title: cm0.dev
-description: Random Knowledge
-googlewebfonts: Fira+Code:wght@400;500;700
+description: IT Topics
+googlewebfonts: Roboto+Mono:wght@400;500;700
 twitter:
   username: #yourusername
   card: summary
