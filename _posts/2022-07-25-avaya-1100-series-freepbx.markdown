@@ -5,7 +5,7 @@ date:   2022-01-06
 tags: voip freepbx asterisk ip phones nortel avaya 1100 1120e 1140e series
 comments: true
 toc: true
-published: true
+published: false
 ---
 
 I had a few Avaya/Nortel 1120e/1140e IP phones laying around at home and decided to create a house phone and intercom system. Setting these phones up with FreePBX/Astericks was a chore and after many hours of trial and error and google searching, i've managed to get these working pretty well with FreePBX. 
