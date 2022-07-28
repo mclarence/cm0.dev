@@ -14,7 +14,7 @@ author:
   email: #youremail
   url: #yoururl
 permalink: pretty
-
+paginate: 10
 baseurl: ""
 markdown: kramdown
 highlighter: rouge
@@ -62,3 +62,7 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+
+webrick:
+  headers:
+    Access-Control-Allow-Origin: "*"
