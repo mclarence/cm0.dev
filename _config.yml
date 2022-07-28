@@ -1,18 +1,16 @@
 site: cm0
 url: https://cm0.dev
-title: cm0.dev
-description: IT Topics
-googlewebfonts: Roboto+Mono:wght@400;500;700
-twitter:
-  username: #yourusername
-  card: summary
-  creator: #yourusername
+title: Clarence M.
+tagline: IT/Programming Blog
+description: >-
+  Hi! I'm Clarence. I am a BScIT student at the University of Technology, Sydney, Australia and a part-time IT support technician. 
+  This blog is a place to share my knowledge and experience within the world of IT.
+
 author:
-  twitter: #yourusername
-  name: #yourusername
-  avatar:
-  email: #youremail
-  url: #yoururl
+  name: Clarence M.
+  url: https://cm0.dev
+
+googlewebfonts: Roboto+Mono:wght@400;500;700
 permalink: pretty
 paginate: 10
 baseurl: ""
@@ -27,8 +25,8 @@ compress_html:
   comments: ["<!-- ", " -->"]
 
 sass:
-  sass_dir:          _sass
-  style:            :compressed
+  sass_dir: _sass
+  style: compressed
 
 plugins:
   - jekyll-paginate
@@ -62,7 +60,3 @@ defaults:
       type: "posts"
     values:
       layout: "post"
-
-webrick:
-  headers:
-    Access-Control-Allow-Origin: "*"
