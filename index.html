@@ -1,7 +1,6 @@
 ---
 layout: default
 ---
-
 <section id="intro">
     <div class="flex-column-between">
         <div class="flex-row-between">
@@ -16,14 +15,77 @@ layout: default
         A place where I share some things i've learnt when dealing with technology.
     </p>
 </section>
-{% include search_field.html %}
-<section class="posts">
-    <h3>BLOG</h3>
-    <ul>
-        {% for post in site.posts %}
-        <li>
-            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
-            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time></li>
-        {% endfor %}
-    </ul>
+<section class="posts" style="margin-top: 0px">
+    <div class="tab-buttons">
+        <h3 class="tab-button" id="btnBlog" style="opacity: 1">POSTS</h3>
+        <h3>|</h3>
+        <h3 class="tab-button" id="btnTags" style="opacity: 0.5">TAGS</h3>
+    </div>
+    <hr>
+    <div id="posts-tab" class="tab-content" style="display: block">
+        {% include search_field.html %}
+        <ul>
+            {% for post in paginator.posts %}
+            <li>
+                <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="pagination">
+            {% if paginator.previous_page %}
+              <a href="{{ paginator.previous_page_path }}" class="previous">
+                {% raw %}<{% endraw %}
+              </a>
+            {% else %}
+              <span class="previous">{% raw %}<{% endraw %}</span>
+            {% endif %}
+            <span class="page_number ">
+              Page: {{ paginator.page }} of {{ paginator.total_pages }}
+            </span>
+            {% if paginator.next_page %}
+              <a href="{{ paginator.next_page_path }}" class="next">{% raw %}>{% endraw %}</a>
+            {% else %}
+              <span class="next ">{% raw %}>{% endraw %}</span>
+            {% endif %}
+          </div>
+
+    </div>
+    <div id="tags-tab" class="tab-content" style="display: none">
+        {% assign tags = site.tags | sort %}
+        <ul>
+            {% for tag in tags %}
+            <li><a href="/tag/{{ tag | first | slugify }}/">{{ tag[0] | replace:'-', ' ' }} ({{ tag | last | size }}){%
+                    unless forloop.last %}, {% endunless %}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
 </section>
+
+<script type="text/javascript">
+    function tabSwitcher(evt) {
+        var tabs = document.getElementsByClassName("tab-content");
+        var buttons = document.getElementsByClassName("tab-button");
+        for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].style.display == "block") {
+                tabs[i].style.display = "none";
+            }
+        }
+
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].style.opacity = 0.5;
+        }
+
+        document.getElementById(evt.currentTarget.param).style.display = "block";
+        evt.currentTarget.style.opacity = 1;
+    }
+
+    var btnBlog = document.getElementById('btnBlog');
+    var btnTags = document.getElementById('btnTags');
+    btnBlog.addEventListener('click', tabSwitcher, false);
+    btnBlog.param = "posts-tab";
+    btnTags.addEventListener('click', tabSwitcher, false);
+    btnTags.param = "tags-tab";
+
+</script>

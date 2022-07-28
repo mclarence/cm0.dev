@@ -1,4 +1,4 @@
 {
-    "origins": ["https://cm0.dev"],
+    "origins": ["https://cm0.dev", "https://giscus.app"],
     "originsRegex": ["http://localhost:[0-9]+"]
 }

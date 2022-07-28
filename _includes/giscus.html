@@ -1,0 +1,25 @@
+<h2>Comments</h2>
+<hr>
+<div id="giscusContainer">
+</div>
+<script>
+    let giscusTheme = localStorage.getItem("theme");
+    let giscusAttributes = {
+      "src": "https://giscus.app/client.js",
+      "data-repo": "mclarence/cm0.dev",
+      "data-repo-id": "R_kgDOHuEPJw",
+      "data-category": "General",
+      "data-category-id": "DIC_kwDOHuEPJ84CQeYP",
+      "data-mapping": "pathname",
+      "data-reactions-enabled": "1",
+      "data-emit-metadata": "0",
+      "data-theme": giscusTheme,
+      "data-lang": "en",
+      "crossorigin": "anonymous",
+      "async": "",
+    };
+    
+    let giscusScript = document.createElement("script");
+    Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+    document.getElementById("giscusContainer").appendChild(giscusScript);
+</script>

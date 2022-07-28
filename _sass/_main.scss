@@ -5,7 +5,7 @@
 	background-color: inherit;
 	color: inherit;
 	margin: 0;
-	padding: 0;
+	//padding: 0;
 }
 
 html {
@@ -288,9 +288,9 @@ b {
 	margin-bottom: 0.5rem;
 }
 
-.posts {
-	margin: 0;
-}
+// .posts {
+// 	margin: 0;
+// }
 
 .posts>h3 {
 	font-weight: 500;
@@ -299,6 +299,7 @@ b {
 .posts ul,
 header ul {
 	list-style: none;
+	padding: 0;
 }
 
 .posts li {
@@ -518,4 +519,32 @@ figcaption {
 
 blockquote ul {
 	margin-left: 2rem;
+}
+
+.tab-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	gap: 10px;
+}
+
+.tab-button {
+	cursor: pointer;
+}
+
+.tab-buttons a {
+	display: none;
+}
+
+.pagination {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	margin-top: 1rem;
+	gap: 1rem;
+}
+
+#giscusContainer {
+	margin-top: 1rem;
 }
