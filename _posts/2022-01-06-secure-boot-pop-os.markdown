@@ -3,6 +3,7 @@ layout: post
 title:  "How to Boot PopOS with Secure Boot"
 date:   2022-01-06
 tags: linux secure-boot popos
+description: "This post describes how to boot PopOS or any other Linux distribution with Secure Boot."
 comments: true
 toc: true
 ---
