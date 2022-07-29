@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://cm0.dev/sitemap.xml

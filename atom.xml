@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Clarence M.</title>
+ <link href="https://cm0.dev/atom.xml" rel="self"/>
+ <link href="https://cm0.dev/"/>
+ <updated>2022-07-29T09:15:24+00:00</updated>
+ <id>https://cm0.dev</id>
+ <author>
+   <name>Clarence M.</name>
+   <email></email>
+ </author>
+
+ 
+ <entry>
+   <title>Using Avaya 1100 Series IP phones with FreePBX</title>
+   <link href="https://cm0.dev/2022/01/06/avaya-1100-series-freepbx"/>
+   <updated>2022-01-06T00:00:00+00:00</updated>
+   <id>https://cm0.dev/2022/01/06/avaya-1100-series-freepbx</id>
+   <content type="html">&lt;p&gt;I had a few Avaya/Nortel 1120e/1140e IP phones laying around at home and decided to create a house phone and intercom system. Setting these phones up with FreePBX/Astericks was a chore and after many hours of trial and error and google searching, i’ve managed to get these working pretty well with FreePBX.&lt;/p&gt;
+
+&lt;h1 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;ul&gt;
+  &lt;li&gt;Advanced technical knowledge. This guide is not intended for beginners.&lt;/li&gt;
+  &lt;li&gt;A working FreePBX/Asterisks server.&lt;/li&gt;
+  &lt;li&gt;A TFTP server.&lt;/li&gt;
+  &lt;li&gt;(Optional) A configurable DHCP server.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;converting-phones-from-unistim-to-sip&quot;&gt;Converting Phones from UNISTIM to SIP&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;If you have one of these phones, there is a good chance that it is running the old UNISTIM firmware. You will need to flash the SIP firmware to the phone in order to get it to work with FreePBX.&lt;/p&gt;
+
+&lt;p&gt;In order to do this easily, a TFTP server should be used. &lt;a href=&quot;https://pjo2.github.io/tftpd64/&quot;&gt;TFTPD64&lt;/a&gt; is an example of one to use. Then configure your DHCP server to include the TFTP’s server IP address in DHCP option 66. If your DHCP server does not allow you to do this, then use TFTPD64’s built in DHCP server.&lt;/p&gt;
+
+&lt;p&gt;Next download the latest firmware for your phone’s model. The latest versions are always available on &lt;a href=&quot;https://support.avaya.com/products/P0599/1100-series-ip-deskphones/&quot;&gt;Avaya’s website&lt;/a&gt;. Place the downloaded &lt;code class=&quot;highlighter-rouge&quot;&gt;.bin&lt;/code&gt; file in the TFTP server’s root directory.&lt;/p&gt;
+
+&lt;p&gt;In the TFTP’s root directory, you will then need to create the following files depending on your phone model.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1120e.cfg&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1120eSIP.cfg&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1140e.cfg&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1140eSIP.cfg&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It is important that they are named according to your phone’s model as shown as above. The phone will be looking for these files as soon as it connects to the TFTP server.&lt;/p&gt;
+
+&lt;p&gt;In each &lt;code class=&quot;highlighter-rouge&quot;&gt;.cfg&lt;/code&gt; file above, include the following contents at the top:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[FW]
+DOWNLOAD_MODE FORCED
+VERSION &amp;lt;firmware file name&amp;gt;
+FILENAME &amp;lt;firmware file name&amp;gt;
+PROTOCOL TFTP
+SERVER_IP &amp;lt;tftp server ip&amp;gt;
+SECURITY_MODE 0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;Replace &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;firmware file name&amp;gt;&lt;/code&gt; with the file name of the firmware you downloaded from Avaya. Ensure that the firmware file is correct for the model you are upgrading.&lt;/li&gt;
+  &lt;li&gt;Replace &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;tftp server ip&amp;gt;&lt;/code&gt; with the IP address of your TFTP server.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now power up the phone whilst connected to the network and the phone should begin to upgrade its firmware. When the phone powers up, it will obtain the TFTP server automatically from the DHCP server. Then the following will happen:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Read the appropriate firmware file for the phone’s model. For example, a 1120e on the UNISTIM firmware will read the &lt;code class=&quot;highlighter-rouge&quot;&gt;1120e.cfg&lt;/code&gt; file or a 1120e on the SIP firmware will read the &lt;code class=&quot;highlighter-rouge&quot;&gt;1120eSIP.cfg&lt;/code&gt; file.&lt;/li&gt;
+  &lt;li&gt;The phone then downloads the firmware file specified in the configuration file.&lt;/li&gt;
+  &lt;li&gt;The phone will write the firmware to its memory and reboot.&lt;/li&gt;
+  &lt;li&gt;If the phone was previously on the UNISTIM firmware and now on the SIP firmware, it will now read configuration files ending in SIP.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;error-authentication-failed&quot;&gt;Error: Authentication Failed&lt;/h2&gt;
+&lt;p&gt;If you receive an error &lt;code class=&quot;highlighter-rouge&quot;&gt;[FW] Authentication Failed&lt;/code&gt; this usually means that you are upgrading the firmware of the phone that is too far ahead. In this case you will need to incrementally upgrade the phone up until the latest the version.&lt;/p&gt;
+
+&lt;p&gt;You may also try using the phone’s BootC mode which is essentialy its recovery mode. I’ve found that you can usually bypass this error using this mode. When the phone immediately powers on, hold the Up + 2 key until you see &lt;code class=&quot;highlighter-rouge&quot;&gt;Starting DHCP...&lt;/code&gt; and it will contact the TFTP server to grab the firmware files.&lt;/p&gt;
+
+&lt;p&gt;If in BootC mode, the phone continues to boot normally after &lt;code class=&quot;highlighter-rouge&quot;&gt;Starting DHCP...&lt;/code&gt; is shown, you will need to manually input the TFTP server. Again hold Up + 2 but as soon as the phone’s lights turn off, immediately press the four soft keys below the screen, from left to right in quick succession. If done correctly, you should see a manual configuration prompt. This mode will allow you to input your TFTP’s server IP address. Use the phone’s buttons to navigate through this menu. After you have applied the settings, the phone should reboot and upgrade the firmware.&lt;/p&gt;
+
+&lt;h1 id=&quot;setting-up-freepbxasterisk&quot;&gt;Setting up FreePBX/Asterisk&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;Once you have upgraded the firmware to SIP, you can now configure FreePBX. In the FreePBX GUI, create a &lt;strong&gt;CHAN_SIP&lt;/strong&gt; extension. It is important that it is on CHAN_SIP as using CHAN_PJSIP will cause the phones to loose SIP registration to the PBX after some time. Take note that when using CHAN_SIP extensions, the SIP port will be 5160/udp instead of the standard 5060/udp port.&lt;/p&gt;
+
+&lt;h1 id=&quot;creating-provisoning-files&quot;&gt;Creating Provisoning Files&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;We will now create provisoning files for the phones so that they can connect to the FreePBX server. This can also be done manually by inputting the SIP domain and authentication credentials manually on the phone itself.&lt;/p&gt;
+
+&lt;p&gt;Using the same TFTP server, open your device’s model configuration file. So if you have a 1120e phone, open the &lt;code class=&quot;highlighter-rouge&quot;&gt;1120eSIP.cfg&lt;/code&gt; file. Below the &lt;code class=&quot;highlighter-rouge&quot;&gt;[FW]&lt;/code&gt; section, add the following section below it:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEVICE_CONFIG]
+DOWNLOAD_MODE FORCED
+FILENAME device.cfg
+VERSION 000001
+PROTOCOL TFTP
+
+[USER_CONFIG]
+DOWNLOAD_MODE FORCED
+VERSION 000001
+PROTOCOL TFTP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ensure that &lt;code class=&quot;highlighter-rouge&quot;&gt;[DEVICE_CONFIG]&lt;/code&gt; is followed by &lt;code class=&quot;highlighter-rouge&quot;&gt;[USER_CONFIG]&lt;/code&gt; as the phone reads these files from top to bottom and will overwrite settings if the sections are out of order.&lt;/p&gt;
+
+&lt;p&gt;Next create a &lt;code class=&quot;highlighter-rouge&quot;&gt;device.cfg&lt;/code&gt; file in the same directory on the TFTP server. In that file, put the following contents:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DNS_DOMAIN &amp;lt;dns domain&amp;gt;
+SIP_DOMAIN1 &amp;lt;sip domain&amp;gt;
+SERVER_IP1_1 &amp;lt;sip domain&amp;gt;
+SERVER_PORT1_1 5160
+SERVER_RETRIES1 3
+
+FORCE_BANNER YES
+BANNER THIS IS A BANNER
+
+VMAIL *97
+VMAIL_DELAY 300
+MAX_APPEARANCE 1
+DEF_LANG English
+DEF_AUDIO_QUALITY High
+LLDP_ENABLE YES
+ADMIN_PASSWORD 1234
+ADMIN_PASSWORD_EXPIRY 0
+DEF_AUDIO_QUALITY High
+
+TIMEZONE_OFFSET &amp;lt;time zone&amp;gt;
+FORCE_TIME_ZONE YES
+
+# Disable extended features
+MAX_LOGINS 1
+USB_HEADSET LOCK
+EXP_MODULE_ENABLE NO
+ENABLE_SERVICE_PACKAGE NO
+IM_MODE DISABLED
+AVAYA_AUTOMATIC_QoS NO
+VQMON_PUBLISH NO
+SIP_TLS_PORT 0
+ENABLE_BT NO
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Replace…&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;dns domain&amp;gt;&lt;/code&gt; with the DNS domain name of your PBX. This can also be set to the IP address of the PBX server.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sip domain&amp;gt;&lt;/code&gt; with the SIP domain name of your PBX. This can also be set to the IP address of the PBX server.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;time zone&amp;gt;&lt;/code&gt; with the time zone offset. The offsets are:&lt;/p&gt;
+
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;Location&lt;/th&gt;
+          &lt;th&gt;Time zone offset (seconds)&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT-04:00) Atlantic Standard Time&lt;/td&gt;
+          &lt;td&gt;-14400&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT-03:30) Newfoundland&lt;/td&gt;
+          &lt;td&gt;-12600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT-03:00) Buenos Aires&lt;/td&gt;
+          &lt;td&gt;-10800&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT-02:30) Newfoundland DST&lt;/td&gt;
+          &lt;td&gt;-9000&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT-01:00) Azores&lt;/td&gt;
+          &lt;td&gt;-3600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+00:00) Greenwich, Dublin, Lisbon, London&lt;/td&gt;
+          &lt;td&gt;0&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+01:00) Central European Time&lt;/td&gt;
+          &lt;td&gt;3600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+02:00) Athens&lt;/td&gt;
+          &lt;td&gt;7200&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+03:00) Moscow&lt;/td&gt;
+          &lt;td&gt;10800&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+03:30) Tehran&lt;/td&gt;
+          &lt;td&gt;12600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+04:00) Abu Dhabi&lt;/td&gt;
+          &lt;td&gt;14400&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+04:30) Khabul&lt;/td&gt;
+          &lt;td&gt;16200&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+05:00) Islamabad&lt;/td&gt;
+          &lt;td&gt;18000&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+05:30) Indian Standard Time&lt;/td&gt;
+          &lt;td&gt;19800&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+06:00) Sri Lanka&lt;/td&gt;
+          &lt;td&gt;21600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+06:30) Myanmar&lt;/td&gt;
+          &lt;td&gt;23400&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+07:00) Bangkok&lt;/td&gt;
+          &lt;td&gt;25200&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+08:00) China Standard Time&lt;/td&gt;
+          &lt;td&gt;28800&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+09:00) Japan Standard Time&lt;/td&gt;
+          &lt;td&gt;32400&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+09:30) Australian Central Standard Time&lt;/td&gt;
+          &lt;td&gt;34200&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+10:00) Australian Eastern Standard Time&lt;/td&gt;
+          &lt;td&gt;36000&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+11:00) Micronesia&lt;/td&gt;
+          &lt;td&gt;39600&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+12:00) Fiji&lt;/td&gt;
+          &lt;td&gt;43200&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;(GMT+13:00) New Zealand&lt;/td&gt;
+          &lt;td&gt;46800&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you do not have a license for these phones, ensure that everything below &lt;em&gt;Disable extended features&lt;/em&gt; is included, otherwise you will not be able to login to the phone.&lt;/p&gt;
+
+&lt;p&gt;Now you will need to get the MAC address of the phone. This can be found at the back of the phone. Once you have the MAC address, create a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;SIP&amp;lt;MAC&amp;gt;.cfg&lt;/code&gt; replacing &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;MAC&amp;gt;&lt;/code&gt; with the phone’s MAC address. In that file, put the following contents:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;AUTOLOGIN_ENABLE USE_AUTOLOGIN_ID
+AUTOLOGIN_ID_KEY01 &amp;lt;sip username&amp;gt;@&amp;lt;sip domain&amp;gt;
+AUTOLOGIN_AUTHID_KEY01 &amp;lt;sip username&amp;gt;
+AUTOLOGIN_PASSWD_KEY01 &amp;lt;sip password&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Replace…&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sip username&amp;gt;&lt;/code&gt; with the SIP username of your desired extension.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sip domain&amp;gt;&lt;/code&gt; with the SIP domain name of your PBX that you configured in &lt;code class=&quot;highlighter-rouge&quot;&gt;device.cfg&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sip password&amp;gt;&lt;/code&gt; with the SIP password of your desired extension.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Once you are done, reboot the phone and it should grab the configuration files from the TFTP server and connect to your FreePBX server.&lt;/p&gt;
+
+&lt;h1 id=&quot;configuring-other-phone-features&quot;&gt;Configuring other Phone Features.&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;There are a lot of paramters that can be configured. Refer to the &lt;a href=&quot;/assets/files/18125156.pdf&quot;&gt;SIP Administration Guide&lt;/a&gt; from Avaya for more information.&lt;/p&gt;
+
+&lt;h2 id=&quot;configuring-intercompaging-features&quot;&gt;Configuring Intercom/Paging Features&lt;/h2&gt;
+&lt;p&gt;To get intercom/paging working on FreePBX, you will need to set &lt;code class=&quot;highlighter-rouge&quot;&gt;ENABLE_ANSWER_MODE&lt;/code&gt; to YES in the device.cfg file. Unfortunately, enabling this will require a license for the phone. If you do not have a license and you enable this, you will be locked out of the phone until it is disabled and reset. After you have enabled this, go into the phone’s preferences (press more soft key until you see &lt;em&gt;prefs&lt;/em&gt;) -&amp;gt; Feature Options -&amp;gt; Answer Mode Settings and set &lt;em&gt;Allow Mode&lt;/em&gt; to public and in &lt;em&gt;Allow Addresses&lt;/em&gt; input the SIP addresses to allow intercom/paging from.&lt;/p&gt;
+
+&lt;p&gt;Then on FreePBX ssh into it and edit &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/asterisk/extensions_override_freepbx.conf&lt;/code&gt; with the following:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[autoanswer]
+include =&amp;gt; autoanswer-custom
+exten =&amp;gt; s,1,GosubIf($[&quot;${ARG1}&quot; != &quot;&quot;]?func-set-sipheader,s,1(Alert-Info,${ARG1}))
+exten =&amp;gt; s,n,GosubIf($[&quot;${ARG2}&quot; != &quot;&quot;]?func-set-sipheader,s,1(Call-Info,${ARG2}))
+exten =&amp;gt; s,n,Gosub(func-set-sipheader,s,1(Answer-Mode,Auto))
+exten =&amp;gt; s,n,Gosub(func-apply-sipheaders,s,1())
+exten =&amp;gt; s,n,Return()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;What this is doing is adding an additional SIP header to the SIP INVITE packet so that the phone will automatically answer the call. This header is the &lt;code class=&quot;highlighter-rouge&quot;&gt;Answer-Mode&lt;/code&gt; header. More information about this can be found from &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc5373#section-4.3.3&quot;&gt;RFC 5373&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;resetting-the-phone&quot;&gt;Resetting the Phone&lt;/h2&gt;
+&lt;p&gt;To reset the phone you will need to know the mac address of the phone. This can be found at the back of the phone. Enter the following key combination to reset the phone:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;**[7][3][6][3][9][MAC][#][#]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;If your MAC address has letters, use the corresponding number to represent the letters. For example if you have an A in the MAC address, you will need to use the number 2. If you have a F in the MAC address, you will need to use the number 3 and so on.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Boot PopOS with Secure Boot</title>
+   <link href="https://cm0.dev/2022/01/06/secure-boot-pop-os"/>
+   <updated>2022-01-06T00:00:00+00:00</updated>
+   <id>https://cm0.dev/2022/01/06/secure-boot-pop-os</id>
+   <content type="html">&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;How to boot PopOS (or any linux distro) with secure boot enabled.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;ul&gt;
+  &lt;li&gt;This guide assumes that you have a working PopOS (21.10) installation and secure boot is currently disabled in the UEFI BIOS.&lt;/li&gt;
+  &lt;li&gt;I also assume you have some experience working through the command line in linux.&lt;/li&gt;
+  &lt;li&gt;These two files, obtainable &lt;a href=&quot;https://blog.hansenpartnership.com/linux-foundation-secure-boot-system-released/&quot;&gt;here&lt;/a&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;Preloader.efi&lt;/em&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;Hashtool.efi&lt;/em&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;steps&quot;&gt;Steps&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+  &lt;li&gt;Open a terminal session and gain root privileges.
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo -i
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Change directory to &lt;code class=&quot;highlighter-rouge&quot;&gt;/boot/efi/EFI/systemd&lt;/code&gt;.
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd /boot/efi/EFI/systemd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Verify that &lt;code class=&quot;highlighter-rouge&quot;&gt;systemd-bootx64.efi&lt;/code&gt; is in this directory.
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$&amp;gt; ls
+systemd-bootx64.efi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Rename &lt;code class=&quot;highlighter-rouge&quot;&gt;systemd-bootx64.efi&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;loader.efi&lt;/code&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mv systemd-bootx64.efi loader.efi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Move both &lt;code class=&quot;highlighter-rouge&quot;&gt;Preloader.efi&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;HashTool.efi&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;/boot/efi/EFI/systemd&lt;/code&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mv Preloader.efi /boot/efi/EFI/systemd
+mv HashTool.efi /boot/efi/EFI/systemd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Rename &lt;code class=&quot;highlighter-rouge&quot;&gt;Preloader.efi&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;systemd-bootx64.efi&lt;/code&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mv Preloader.efi systemd-bootx64.efi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Reboot into BIOS and enable secure boot.&lt;/li&gt;
+  &lt;li&gt;Reboot again and you should now see this screen:
+  &lt;img src=&quot;/assets/images/secure-boot-popos/step8.jpg&quot; alt=&quot;bootimg&quot; /&gt;
+  Simply select OK to continue.&lt;/li&gt;
+  &lt;li&gt;Select &lt;em&gt;Enroll Hash&lt;/em&gt;
+  &lt;img src=&quot;/assets/images/secure-boot-popos/step9.jpg&quot; alt=&quot;enrollhash&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;Select &lt;code class=&quot;highlighter-rouge&quot;&gt;loader.efi&lt;/code&gt; and press enter.
+  &lt;img src=&quot;/assets/images/secure-boot-popos/step10.jpg&quot; alt=&quot;enrollhash1&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;It will ask if you want to &lt;em&gt;Enroll this hash into the MOK database?&lt;/em&gt;. Simply select YES.
+  &lt;img src=&quot;/assets/images/secure-boot-popos/step11.jpg&quot; alt=&quot;enrollhash2&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;It will bring you back to the main menu. Select &lt;em&gt;Enroll Hash&lt;/em&gt; again.
+  &lt;img src=&quot;/assets/images/secure-boot-popos/step9.jpg&quot; alt=&quot;enrollhash&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;Repeat steps 10 and 11 with &lt;code class=&quot;highlighter-rouge&quot;&gt;vmlinuz.efi&lt;/code&gt; which can be found by selecting &lt;code class=&quot;highlighter-rouge&quot;&gt;../&lt;/code&gt; &amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Pop_OS-....&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Once you have completed the above, reboot the system and it should successfully boot into PopOS with secure boot enabled.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;notes&quot;&gt;Notes&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;ul&gt;
+  &lt;li&gt;Sometimes when updating PopOS, it will modify the .efi files. This will prevent PopOS from booting with secure boot again. To fix this simply re-enroll the hashes again (Steps 9-13) to fix the issue.&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+ </entry>
+ 
+
+</feed>
